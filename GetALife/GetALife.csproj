@@ -1,23 +1,106 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+	<TargetFramework>net472</TargetFramework>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
     <Reference Include="Kitchen.Common">
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\Kitchen.Common.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Kitchen.GameData">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\Kitchen.GameData.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="KitchenLib-Workshop">
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\workshop\content\1599600\2898069883\KitchenLib-Workshop.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="KitchenMods">
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\KitchenMods.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="PreferenceSystem-Workshop">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\workshop\content\1599600\2949018507\PreferenceSystem-Workshop.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="PresentationCore">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Sirenix.Serialization">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\Sirenix.Serialization.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Unity.Entities">
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\Unity.Entities.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\PlateUp_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	<Exec Command="copy /Y &quot;$(TargetPath)&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\PlateUp\PlateUp\Mods\GetALifeMod\$(TargetFileName)&quot;" />
+  </Target>
+
+  <ItemGroup>
+    <Reference Update="System">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Update="System.Core">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Update="System.Data">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Update="System.Drawing">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Update="System.IO.Compression.FileSystem">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Update="System.Numerics">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Update="System.Runtime.Serialization">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Update="System.Xml">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Update="System.Xml.Linq">
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
 
