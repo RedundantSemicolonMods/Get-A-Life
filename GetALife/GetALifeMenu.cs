@@ -42,7 +42,7 @@ namespace RedundantSemicolonMods.GetALife
                 }
             )).OnChanged += (obj, value) =>
             {
-                GetALifeMain.Prefs.Set<PreferenceInt>(GetALifeMain.RARITY_TIER_ID, value);
+                GetALifeMain.Prefs.GetPreference<PreferenceInt>(GetALifeMain.RARITY_TIER_ID).Set(value);
                 GetALifeMain.Prefs.Save();
             };
 
@@ -71,11 +71,12 @@ namespace RedundantSemicolonMods.GetALife
                 }
             )).OnChanged += (obj, value) =>
             {
-                GetALifeMain.Prefs.Set<PreferenceInt>(GetALifeMain.PRICE_TIER_ID, value);
+                GetALifeMain.Prefs.GetPreference<PreferenceInt>(GetALifeMain.PRICE_TIER_ID).Set(value);
                 GetALifeMain.Prefs.Save();
             };
             New<SpacerElement>(true);
             AddButton("Back", (obj) => RequestPreviousMenu());
+            ResetPanel();
         }
     }
 }
