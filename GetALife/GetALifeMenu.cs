@@ -7,14 +7,15 @@ using System.Collections.Generic;
 
 namespace RedundantSemicolonMods.GetALife
 {
-    public class GetALifeMenu<T> : KLMenu<T>
+    public class GetALifeMenu : KLMenu
     {
         public GetALifeMenu(UnityEngine.Transform container, ModuleList module_list) : base(container, module_list) {
-            GetALifeMain.Logger.LogInfo($"[DEBUG] GetALifeMenu Constructor Reached for {typeof(T).Name}!");
+            GetALifeMain.Logger.LogInfo($"[DEBUG] GetALifeMenu Constructor Reached!");
         }
 
         public override void Setup(int player_id)
         {
+            GetALifeMain.Logger.LogInfo($"[DEBUG] GetALifeMenu Setup Reached!");
             AddLabel("Get A Life Settings");
 
             // select rarity
@@ -73,7 +74,7 @@ namespace RedundantSemicolonMods.GetALife
                 GetALifeMain.Prefs.Set<PreferenceInt>(GetALifeMain.PRICE_TIER_ID, value);
                 GetALifeMain.Prefs.Save();
             };
-
+            New<SpacerElement>(true);
             AddButton("Back", (obj) => RequestPreviousMenu());
         }
     }

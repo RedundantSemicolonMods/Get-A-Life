@@ -5,6 +5,7 @@ using KitchenLib.Event;
 using KitchenLib.Logging;
 using KitchenLib.Preferences;
 using KitchenLib.References;
+using KitchenLib.UI.PlateUp.PreferenceMenus;
 using KitchenMods;
 using System;
 using System.Reflection;
@@ -41,43 +42,17 @@ namespace RedundantSemicolonMods.GetALife
 
         protected override void OnPostActivate(Mod mod)
         {
-            // --- PAUSE MENU LOGGING ---
-            Events.PreferenceMenu_PauseMenu_CreateSubmenusEvent += (s, args) =>
-            {
-                try
-                {
-                    Logger.LogInfo("[DEBUG] Attempting to build Pause Menu instance...");
-                    var menuInstance = new GetALifeMenu<PauseMenuAction>(args.Container, args.Module_list);
-                    args.Menus.Add(typeof(GetALifeMenu<PauseMenuAction>), menuInstance);
-                    Logger.LogInfo("[DEBUG] Pause Menu added to args.Menus successfully!");
-                }
-                catch (Exception e)
-                {
-                    Logger.LogError($"[FATAL] Pause Menu failed to instantiate: {e.Message}");
-                    Logger.LogError(e.StackTrace);
-                }
-            };
+            // Try to get the preferences first. If they return null, register them.
+            if (Prefs.GetPreference<PreferenceInt>(PRICE_TIER_ID) == null)
+                Prefs.RegisterPreference(new PreferenceInt(PRICE_TIER_ID, (int)PriceTier.Expensive));
 
-            ModsPreferencesMenu<PauseMenuAction>.RegisterMenu(MOD_NAME, typeof(GetALifeMenu<PauseMenuAction>), typeof(PauseMenuAction));
+            if (Prefs.GetPreference<PreferenceInt>(RARITY_TIER_ID) == null)
+                Prefs.RegisterPreference(new PreferenceInt(RARITY_TIER_ID, (int)RarityTier.Special));
 
-            // --- MAIN MENU LOGGING ---
-            Events.PreferenceMenu_MainMenu_CreateSubmenusEvent += (s, args) =>
-            {
-                try
-                {
-                    Logger.LogInfo("[DEBUG] Attempting to build Main Menu instance...");
-                    var menuInstance = new GetALifeMenu<MainMenuAction>(args.Container, args.Module_list);
-                    args.Menus.Add(typeof(GetALifeMenu<MainMenuAction>), menuInstance);
-                    Logger.LogInfo("[DEBUG] Main Menu added to args.Menus successfully!");
-                }
-                catch (Exception e)
-                {
-                    Logger.LogError($"[FATAL] Main Menu failed to instantiate: {e.Message}");
-                    Logger.LogError(e.StackTrace);
-                }
-            };
+            Prefs.Load();
 
-            ModsPreferencesMenu<MainMenuAction>.RegisterMenu(MOD_NAME, typeof(GetALifeMenu<MainMenuAction>), typeof(MainMenuAction));
+            MainMenuPreferencesesMenu.RegisterMenu(MOD_NAME, typeof(GetALifeMenu));
+            PauseMenuPreferencesesMenu.RegisterMenu(MOD_NAME, typeof(GetALifeMenu));
 
             Logger.LogInfo($"{MOD_NAME} initialized successfully!");
         }
