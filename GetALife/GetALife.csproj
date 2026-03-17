@@ -95,5 +95,9 @@
       <Private>False</Private>
     </Reference>
   </ItemGroup>
+	
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy /Y &quot;$(TargetPath)&quot; &quot;C:\Users\pnmod\Documents\mods-publish\PlateUp\GetALife\&quot;" />
+  </Target>
 
 </Project>
