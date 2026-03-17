@@ -7,10 +7,7 @@ using KitchenLib.Preferences;
 using KitchenLib.References;
 using KitchenMods;
 using System;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using PreferenceSystem;
 
 namespace RedundantSemicolonMods.GetALife
 {
@@ -44,8 +41,43 @@ namespace RedundantSemicolonMods.GetALife
 
         protected override void OnPostActivate(Mod mod)
         {
-            //register settings menus
-            
+            // --- PAUSE MENU LOGGING ---
+            Events.PreferenceMenu_PauseMenu_CreateSubmenusEvent += (s, args) =>
+            {
+                try
+                {
+                    Logger.LogInfo("[DEBUG] Attempting to build Pause Menu instance...");
+                    var menuInstance = new GetALifeMenu<PauseMenuAction>(args.Container, args.Module_list);
+                    args.Menus.Add(typeof(GetALifeMenu<PauseMenuAction>), menuInstance);
+                    Logger.LogInfo("[DEBUG] Pause Menu added to args.Menus successfully!");
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError($"[FATAL] Pause Menu failed to instantiate: {e.Message}");
+                    Logger.LogError(e.StackTrace);
+                }
+            };
+
+            ModsPreferencesMenu<PauseMenuAction>.RegisterMenu(MOD_NAME, typeof(GetALifeMenu<PauseMenuAction>), typeof(PauseMenuAction));
+
+            // --- MAIN MENU LOGGING ---
+            Events.PreferenceMenu_MainMenu_CreateSubmenusEvent += (s, args) =>
+            {
+                try
+                {
+                    Logger.LogInfo("[DEBUG] Attempting to build Main Menu instance...");
+                    var menuInstance = new GetALifeMenu<MainMenuAction>(args.Container, args.Module_list);
+                    args.Menus.Add(typeof(GetALifeMenu<MainMenuAction>), menuInstance);
+                    Logger.LogInfo("[DEBUG] Main Menu added to args.Menus successfully!");
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError($"[FATAL] Main Menu failed to instantiate: {e.Message}");
+                    Logger.LogError(e.StackTrace);
+                }
+            };
+
+            ModsPreferencesMenu<MainMenuAction>.RegisterMenu(MOD_NAME, typeof(GetALifeMenu<MainMenuAction>), typeof(MainMenuAction));
 
             Logger.LogInfo($"{MOD_NAME} initialized successfully!");
         }
@@ -63,13 +95,13 @@ namespace RedundantSemicolonMods.GetALife
                 extraLife.ShoppingTags = ShoppingTags.Basic;    // group with basic shop items
                 extraLife.SellOnlyAsDuplicate = false;          // false = shows up randomly; true = only shows up if you already have one
 
-                // apply defined price tier
+                // apply defined price tier (coerce into valid enum index)
                 int priceIndex = Prefs.GetPreference<PreferenceInt>(PRICE_TIER_ID).Value;
-                extraLife.PriceTier = (PriceTier)priceIndex;
+                extraLife.PriceTier = CoerceEnum<PriceTier>(priceIndex, PriceTier.Expensive);
 
-                // apply defined rarity tier
+                // apply defined rarity tier (coerce into valid enum index)
                 int rarityIndex = Prefs.GetPreference<PreferenceInt>(RARITY_TIER_ID).Value;
-                extraLife.RarityTier = (RarityTier)rarityIndex;
+                extraLife.RarityTier = CoerceEnum<RarityTier>(rarityIndex, RarityTier.Special);
 
                 Logger.LogInfo("Extra Life has been added to the shop pool!");
             }
@@ -105,6 +137,17 @@ namespace RedundantSemicolonMods.GetALife
                 catch { }
             }
             Logger.LogInfo("==================================================");
+        }
+
+        public static T CoerceEnum<T>(int index, T defaultValue) where T : struct, System.Enum
+        {
+            if (Enum.IsDefined(typeof(T), index))
+            {
+                return (T)Enum.ToObject(typeof(T), index);
+            }
+
+            Logger.LogInfo($"[WARNING] Preference has invalid value {index}. Defaulting to {defaultValue}.");
+            return defaultValue;
         }
     }
 }
