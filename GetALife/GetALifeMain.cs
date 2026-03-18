@@ -31,7 +31,7 @@ namespace RedundantSemicolonMods.GetALife
 
         public GetALifeMain() : base(MOD_ID, MOD_NAME, MOD_AUTHOR, MOD_VERSION, COMPATIBILE_VERSIONS, Assembly.GetExecutingAssembly())
         {
-            // Keep constructor lightweight: avoid heavy initialization here.
+            // constructor lightweight
         }
 
         protected override void OnPostActivate(Mod mod)
@@ -62,16 +62,12 @@ namespace RedundantSemicolonMods.GetALife
                 }
 
                 // Register menu(s) so the mod appears under Mod Preferences
-                // These go into KitchenLib's mods registry so names show up:
                 ModsPreferencesMenu<MenuAction>.RegisterMenu(MOD_NAME, typeof(GetALifeMenu), typeof(MenuAction));
                 ModsPreferencesMenu<PauseMenuAction>.RegisterMenu(MOD_NAME, typeof(GetALifeMenu), typeof(PauseMenuAction));
 
-                // ALSO explicitly register with the MainMenu / PauseMenu preference menus.
-                // KitchenLib may transfer mods' registrations into those menus with autoRegisterTyping = false,
-                // which results in names being listed but no Activator hook to create menu instances.
-                // Registering here ensures the event handlers that create menu instances are attached.
-                MainMenuPreferencesesMenu.RegisterMenu(MOD_NAME, typeof(GetALifeMenu));    // autoRegisterTyping = true by default
-                PauseMenuPreferencesesMenu.RegisterMenu(MOD_NAME, typeof(GetALifeMenu));   // same for pause menu
+                // ALSO explicitly register with the MainMenu / PauseMenu preference menus to ensure instance creation
+                MainMenuPreferencesesMenu.RegisterMenu(MOD_NAME, typeof(GetALifeMenu));
+                PauseMenuPreferencesesMenu.RegisterMenu(MOD_NAME, typeof(GetALifeMenu));
 
                 // Subscribe to BuildGameData to modify the Extra Life appliance once GameData is available
                 Events.BuildGameDataEvent += OnBuildGameData;
@@ -102,17 +98,20 @@ namespace RedundantSemicolonMods.GetALife
                 Logger.LogInfo($"Applying {MOD_NAME} preferences to Extra Life (ID: {extraLife.ID}).");
 
                 // enable in shop
-                extraLife.IsPurchasable = true;                 // allows it to drop as a blueprint
-                extraLife.ShoppingTags = ShoppingTags.Basic;    // group with basic shop items
-                extraLife.SellOnlyAsDuplicate = false;          // false = shows up randomly; true = only shows up if you already have one
+                extraLife.IsPurchasable = true;
+                extraLife.ShoppingTags = ShoppingTags.Basic;
+                extraLife.SellOnlyAsDuplicate = false;
 
                 // apply defined price tier (coerce into valid enum index)
                 int priceIndex = SafeGetPrefValue(PRICE_TIER_ID, (int)PriceTier.Expensive);
                 extraLife.PriceTier = CoerceEnum<PriceTier>(priceIndex, PriceTier.Expensive);
 
-                // apply defined rarity tier (coerce into valid enum index)
+                // apply defined rarity tier
                 int rarityIndex = SafeGetPrefValue(RARITY_TIER_ID, (int)RarityTier.Special);
                 extraLife.RarityTier = CoerceEnum<RarityTier>(rarityIndex, RarityTier.Special);
+
+                // We are not setting a numeric PurchaseCost; price is represented by PriceTier only.
+                Logger.LogInfo($"Configured Extra Life: PriceTier={extraLife.PriceTier}, RarityTier={extraLife.RarityTier}");
 
                 Logger.LogInfo("Extra Life has been added to the shop pool!");
             }
