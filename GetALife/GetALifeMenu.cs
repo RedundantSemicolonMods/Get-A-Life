@@ -1,4 +1,4 @@
-﻿using Kitchen;
+﻿﻿using Kitchen;
 using Kitchen.Modules;
 using KitchenData;
 using KitchenLib;
@@ -46,141 +46,90 @@ namespace RedundantSemicolonMods.GetALife
 
         public GetALifeMenu(Transform container, ModuleList module_list) : base(container, module_list)
         {
-            try
-            {
-                GetALifeMain.Logger.LogInfo("[GetALifeMenu] Constructor");
-            }
-            catch (Exception e)
-            {
-                GetALifeMain.Logger.LogError($"[GetALifeMenu] Constructor exception: {e}");
-            }
+            GetALifeMain.Logger.LogInfo("[GetALifeMenu] Constructor");
         }
 
         public override void Setup(int player_id)
         {
-            try
+            GetALifeMain.Logger.LogInfo("[GetALifeMenu] Setup start");
+            ModuleList.Clear();
+
+            AddLabel("Get A Life! Settings");
+
+            // Master toggle
+            bool isModEnabled = GetALifeMain.SafeGetPrefValue(GetALifeMain.MOD_ENABLED_ID, true);
+            modEnabled = new Option<bool>(modEnabledValues, isModEnabled, modEnabledLabels);
+            AddSelect(modEnabled);
+            modEnabled.OnChanged += (s, value) =>
             {
-                GetALifeMain.Logger.LogInfo("[GetALifeMenu] Setup start");
-                ModuleList.Clear();
-
-                AddLabel("Get A Life Settings");
-
-                // Master toggle
-                bool isModEnabled = GetALifeMain.SafeGetPrefValue(GetALifeMain.MOD_ENABLED_ID, true);
-                modEnabled = new Option<bool>(modEnabledValues, isModEnabled, modEnabledLabels);
-                AddSelect(modEnabled);
-                modEnabled.OnChanged += (s, value) =>
-                    {
-                        try
-                        {
-                            var pref = GetALifeMain.Prefs.GetPreference<PreferenceBool>(GetALifeMain.MOD_ENABLED_ID);
-                            if (pref != null)
-                            {
-                                pref.Set(value);
-                                GetALifeMain.Prefs.Save();
-                                GetALifeMain.Logger.LogInfo($"[GetALifeMenu] Saved mod enabled preference = {value}");
-                            }
-                            else
-                            {
-                                GetALifeMain.Logger.LogError("[GetALifeMenu] Failed to save mod enabled preference: preference object null.");
-                            }
-                        } catch (Exception e)
-                        {
-                            GetALifeMain.Logger.LogError($"[GetALifeMenu] Error saving mod enabled preference: {e}");
-                            return;
-                        }
-                    };
-
-                New<SpacerElement>(true);
-
-                // Rarity option
-                AddInfo("Item Frequency");
-                int rarityValue = SafeGetPrefValue(GetALifeMain.RARITY_TIER_ID, (int)RarityTier.Special, rarityValues);
-                rarityOption = new Option<int>(rarityValues, rarityValue, rarityLabels);
-                AddSelect(rarityOption);
-                rarityOption.OnChanged += (s, value) =>
+                var pref = GetALifeMain.Prefs.GetPreference<PreferenceBool>(GetALifeMain.MOD_ENABLED_ID);
+                if (pref != null)
                 {
-                    try
-                    {
-                        var pref = GetALifeMain.Prefs.GetPreference<PreferenceInt>(GetALifeMain.RARITY_TIER_ID);
-                        if (pref != null)
-                        {
-                            pref.Set(value);
-                            GetALifeMain.Prefs.Save();
-                            GetALifeMain.Logger.LogInfo($"[GetALifeMenu] Saved rarity preference = {value}");
-                        }
-                        else
-                        {
-                            GetALifeMain.Logger.LogError("[GetALifeMenu] Failed to save rarity preference: preference object null.");
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        GetALifeMain.Logger.LogError($"[GetALifeMenu] Error saving rarity preference: {e}");
-                    }
-                };
-
-                New<SpacerElement>(true);
-
-                // Price option (plain tier labels, no gold amounts)
-                AddInfo("Item Price");
-                int priceValue = SafeGetPrefValue(GetALifeMain.PRICE_TIER_ID, (int)PriceTier.Expensive, priceValues);
-                priceOption = new Option<int>(priceValues, priceValue, priceLabelsPlain);
-                AddSelect(priceOption);
-                priceOption.OnChanged += (s, value) =>
+                    pref.Set(value);
+                    GetALifeMain.Prefs.Save();
+                    GetALifeMain.Logger.LogInfo($"[GetALifeMenu] Saved mod enabled preference = {value}");
+                }
+                else
                 {
-                    try
-                    {
-                        var pref = GetALifeMain.Prefs.GetPreference<PreferenceInt>(GetALifeMain.PRICE_TIER_ID);
-                        if (pref != null)
-                        {
-                            pref.Set(value);
-                            GetALifeMain.Prefs.Save();
-                            GetALifeMain.Logger.LogInfo($"[GetALifeMenu] Saved price preference = {(PriceTier)value}");
-                        }
-                        else
-                        {
-                            GetALifeMain.Logger.LogError("[GetALifeMenu] Failed to save price preference: preference object null.");
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        GetALifeMain.Logger.LogError($"[GetALifeMenu] Error saving price preference: {e}");
-                    }
-                };
+                    GetALifeMain.Logger.LogError("[GetALifeMenu] Failed to save mod enabled preference: preference object null.");
+                }
+            };
 
-                New<SpacerElement>(true);
-                AddButton("Back", (_) => RequestPreviousMenu());
+            New<SpacerElement>(true);
 
-                // finalize layout
-                ResetPanel();
-
-                GetALifeMain.Logger.LogInfo("[GetALifeMenu] Setup complete");
-            }
-            catch (Exception e)
+            // Rarity option
+            AddInfo("Item Frequency");
+            int rarityValue = SafeGetPrefValue(GetALifeMain.RARITY_TIER_ID, (int)RarityTier.Special, rarityValues);
+            rarityOption = new Option<int>(rarityValues, rarityValue, rarityLabels);
+            AddSelect(rarityOption);
+            rarityOption.OnChanged += (s, value) =>
             {
-                GetALifeMain.Logger.LogError($"[GetALifeMenu] Setup exception: {e}");
-            }
+                var pref = GetALifeMain.Prefs.GetPreference<PreferenceInt>(GetALifeMain.RARITY_TIER_ID);
+                if (pref != null)
+                {
+                    pref.Set(value);
+                    GetALifeMain.Prefs.Save();
+                    GetALifeMain.Logger.LogInfo($"[GetALifeMenu] Saved rarity preference = {value}");
+                }
+            };
+
+            New<SpacerElement>(true);
+
+            // Price option (plain tier labels, no gold amounts)
+            AddInfo("Item Price");
+            int priceValue = SafeGetPrefValue(GetALifeMain.PRICE_TIER_ID, (int)PriceTier.Expensive, priceValues);
+            priceOption = new Option<int>(priceValues, priceValue, priceLabelsPlain);
+            AddSelect(priceOption);
+            priceOption.OnChanged += (s, value) =>
+            {
+                var pref = GetALifeMain.Prefs.GetPreference<PreferenceInt>(GetALifeMain.PRICE_TIER_ID);
+                if (pref != null)
+                {
+                    pref.Set(value);
+                    GetALifeMain.Prefs.Save();
+                    GetALifeMain.Logger.LogInfo($"[GetALifeMenu] Saved price preference = {(PriceTier)value}");
+                }
+            };
+
+            New<SpacerElement>(true);
+            AddButton("Back", (_) => RequestPreviousMenu());
+
+            // finalize layout
+            ResetPanel();
+
+            GetALifeMain.Logger.LogInfo("[GetALifeMenu] Setup complete");
         }
 
         private int SafeGetPrefValue(string prefKey, int defaultValue, List<int> validValues)
         {
-            try
+            var pref = GetALifeMain.Prefs?.GetPreference<PreferenceInt>(prefKey);
+            int val = pref != null ? pref.Value : defaultValue;
+            if (!validValues.Contains(val))
             {
-                var pref = GetALifeMain.Prefs?.GetPreference<PreferenceInt>(prefKey);
-                int val = pref != null ? pref.Value : defaultValue;
-                if (!validValues.Contains(val))
-                {
-                    GetALifeMain.Logger.LogInfo($"[GetALifeMenu] Preference {prefKey} had invalid value {val}, defaulting to {defaultValue}");
-                    return defaultValue;
-                }
-                return val;
-            }
-            catch (Exception e)
-            {
-                GetALifeMain.Logger.LogError($"[GetALifeMenu] SafeGetPrefValue error for {prefKey}: {e}");
+                GetALifeMain.Logger.LogWarning($"[GetALifeMenu] Preference {prefKey} had invalid value {val}, defaulting to {defaultValue}");
                 return defaultValue;
             }
+            return val;
         }
     }
 }
