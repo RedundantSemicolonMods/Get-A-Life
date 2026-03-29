@@ -23,6 +23,7 @@ namespace RedundantSemicolonMods.GetALife
 
         // prefs info
         public static PreferenceManager Prefs;
+        public const string MOD_ENABLED_ID = "getALifeEnabled";
         public const string PRICE_TIER_ID = "extraLifePriceTier";
         public const string RARITY_TIER_ID = "extraLifeRarityTier";
 
@@ -45,6 +46,9 @@ namespace RedundantSemicolonMods.GetALife
                     Prefs = new PreferenceManager(MOD_ID);
 
                 // Register preferences only if they are not already registered
+                if (Prefs.GetPreference<PreferenceBool>(MOD_ENABLED_ID) == null)
+                    Prefs.RegisterPreference(new PreferenceBool(MOD_ENABLED_ID, true));
+
                 if (Prefs.GetPreference<PreferenceInt>(PRICE_TIER_ID) == null)
                     Prefs.RegisterPreference(new PreferenceInt(PRICE_TIER_ID, (int)PriceTier.Expensive));
 
@@ -98,7 +102,7 @@ namespace RedundantSemicolonMods.GetALife
                 Logger.LogInfo($"Applying {MOD_NAME} preferences to Extra Life (ID: {extraLife.ID}).");
 
                 // enable in shop
-                extraLife.IsPurchasable = true;
+                extraLife.IsPurchasable = SafeGetPrefValue(MOD_ENABLED_ID, true);
                 extraLife.ShoppingTags = ShoppingTags.Basic;
                 extraLife.SellOnlyAsDuplicate = false;
 
@@ -122,9 +126,18 @@ namespace RedundantSemicolonMods.GetALife
         }
 
         /// <summary>
+        /// Safely gets a boolean preference value, falling back to defaultValue if missing.
+        /// </summary>
+        public static bool SafeGetPrefValue(string prefKey, bool defaultValue)
+        {
+            var pref = Prefs?.GetPreference<PreferenceBool>(prefKey); //
+            return pref != null ? pref.Value : defaultValue; //
+        }
+
+        /// <summary>
         /// Safely gets an integer preference value, falling back to defaultValue if missing.
         /// </summary>
-        private int SafeGetPrefValue(string prefKey, int defaultValue)
+        public static int SafeGetPrefValue(string prefKey, int defaultValue)
         {
             try
             {

@@ -3,7 +3,6 @@ using Kitchen.Modules;
 using KitchenData;
 using KitchenLib;
 using KitchenLib.Preferences;
-using KitchenLib.UI.PlateUp;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,8 +11,11 @@ namespace RedundantSemicolonMods.GetALife
 {
     public class GetALifeMenu : KLMenu
     {
+        private Option<bool> modEnabled;
         private Option<int> rarityOption;
         private Option<int> priceOption;
+
+        private readonly List<bool> modEnabledValues = new List<bool> { true, false };
 
         private readonly List<int> rarityValues = new List<int>
         {
@@ -35,6 +37,7 @@ namespace RedundantSemicolonMods.GetALife
             (int)PriceTier.ExtremelyExpensive
         };
 
+        private readonly List<string> modEnabledLabels = new List<string> { "Enabled", "Disabled" };
         private readonly List<string> rarityLabels = new List<string> { "Common", "Uncommon", "Rare", "Special" };
         private readonly List<string> priceLabelsPlain = new List<string>
         {
@@ -61,6 +64,34 @@ namespace RedundantSemicolonMods.GetALife
                 ModuleList.Clear();
 
                 AddLabel("Get A Life Settings");
+
+                // Master toggle
+                bool isModEnabled = GetALifeMain.SafeGetPrefValue(GetALifeMain.MOD_ENABLED_ID, true);
+                modEnabled = new Option<bool>(modEnabledValues, isModEnabled, modEnabledLabels);
+                AddSelect(modEnabled);
+                modEnabled.OnChanged += (s, value) =>
+                    {
+                        try
+                        {
+                            var pref = GetALifeMain.Prefs.GetPreference<PreferenceBool>(GetALifeMain.MOD_ENABLED_ID);
+                            if (pref != null)
+                            {
+                                pref.Set(value);
+                                GetALifeMain.Prefs.Save();
+                                GetALifeMain.Logger.LogInfo($"[GetALifeMenu] Saved mod enabled preference = {value}");
+                            }
+                            else
+                            {
+                                GetALifeMain.Logger.LogError("[GetALifeMenu] Failed to save mod enabled preference: preference object null.");
+                            }
+                        } catch (Exception e)
+                        {
+                            GetALifeMain.Logger.LogError($"[GetALifeMenu] Error saving mod enabled preference: {e}");
+                            return;
+                        }
+                    };
+
+                New<SpacerElement>(true);
 
                 // Rarity option
                 AddInfo("Item Frequency");
