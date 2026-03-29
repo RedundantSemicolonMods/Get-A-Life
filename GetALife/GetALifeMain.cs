@@ -90,6 +90,7 @@ namespace RedundantSemicolonMods.GetALife
             // apply defined price tier (coerce into valid enum index)
             int priceIndex = SafeGetPrefValue(PRICE_TIER_ID, (int)PriceTier.Expensive);
             extraLife.PriceTier = CoerceEnum<PriceTier>(priceIndex, PriceTier.Expensive);
+            extraLife.PurchaseCost = 0; // Force the game to use PriceTier instead of a fixed cost
 
             // apply defined rarity tier
             int rarityIndex = SafeGetPrefValue(RARITY_TIER_ID, (int)RarityTier.Special);

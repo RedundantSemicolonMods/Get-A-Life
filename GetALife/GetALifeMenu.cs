@@ -1,9 +1,9 @@
-﻿﻿using Kitchen;
+﻿using Kitchen;
 using Kitchen.Modules;
 using KitchenData;
 using KitchenLib;
 using KitchenLib.Preferences;
-using System;
+using KitchenLib.References;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -68,6 +68,15 @@ namespace RedundantSemicolonMods.GetALife
                     pref.Set(value);
                     GetALifeMain.Prefs.Save();
                     GetALifeMain.Logger.LogInfo($"[GetALifeMenu] Saved mod enabled preference = {value}");
+
+                    if (GameData.Main != null)
+                    {
+                        var extraLife = GameData.Main.Get<Appliance>(ApplianceReferences.ExtraLife);
+                        if (extraLife != null)
+                        {
+                            extraLife.IsPurchasable = value;
+                        }
+                    }
                 }
                 else
                 {
@@ -90,6 +99,15 @@ namespace RedundantSemicolonMods.GetALife
                     pref.Set(value);
                     GetALifeMain.Prefs.Save();
                     GetALifeMain.Logger.LogInfo($"[GetALifeMenu] Saved rarity preference = {value}");
+
+                    if (GameData.Main != null)
+                    {
+                        var extraLife = GameData.Main.Get<Appliance>(ApplianceReferences.ExtraLife);
+                        if (extraLife != null)
+                        {
+                            extraLife.RarityTier = (RarityTier)value;
+                        }
+                    }
                 }
             };
 
@@ -108,6 +126,16 @@ namespace RedundantSemicolonMods.GetALife
                     pref.Set(value);
                     GetALifeMain.Prefs.Save();
                     GetALifeMain.Logger.LogInfo($"[GetALifeMenu] Saved price preference = {(PriceTier)value}");
+
+                    if (GameData.Main != null)
+                    {
+                        var extraLife = GameData.Main.Get<Appliance>(ApplianceReferences.ExtraLife);
+                        if (extraLife != null)
+                        {
+                            extraLife.PriceTier = (PriceTier)value;
+                            extraLife.PurchaseCost = 0;
+                        }
+                    }
                 }
             };
 
